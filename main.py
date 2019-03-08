@@ -215,6 +215,10 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
             
             tree = ET.ElementTree(root)
             tree.write(self._config_file)
+            
+            # Set the initial image to thumbnail viewer.
+            img_file_path = os.path.join(os.path.join(self._source_directory, "images"),"noimage.jpg")
+            self.showImage(img_file_path)
         else:
             xml_config = ET.parse(self._config_file).getroot()
             
@@ -245,13 +249,13 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                             
                             # Open the previous project.
                             self.openProject()
-                        
+                        else:
+                            # Set the initial image to thumbnail viewer.
+                            img_file_path = os.path.join(os.path.join(self._source_directory, "images"),"noimage.jpg")
+                            self.showImage(img_file_path)
+                            
         # Set the default skin.
         self.setSkin(lang=self._language, theme=self._skin)
-        
-        # Set the initial image to thumbnail viewer.
-        img_file_path = os.path.join(os.path.join(self._source_directory, "images"),"noimage.jpg")
-        self.showImage(img_file_path)
     
     # ==========================
     # General operation
