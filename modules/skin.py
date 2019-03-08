@@ -481,20 +481,20 @@ def applyMainWindowSkin(parent, icon_path, skin="grey"):
         parent.tbx_mat_tmp_mid.setStyleSheet(font_style_color + font_style_size + text_border + text_background)
         parent.tbx_mat_tmp_end.setStyleSheet(font_style_color + font_style_size + text_border + text_background)
         parent.tbx_mat_description.setStyleSheet(font_style_color + font_style_size + text_border + text_background)
-        
-        parent.btn_mat_add.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_mat_del.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_mat_imp.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_mat_rec.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_mat_take.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_mat_update.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_open_gimp.setStyleSheet(back_color + font_style_size + text_border)
+         
+        parent.btn_mat_add.setFlat(True)
+        parent.btn_mat_del.setFlat(True)
+        parent.btn_mat_imp.setFlat(True)
+        parent.btn_mat_rec.setFlat(True)
+        parent.btn_mat_take.setFlat(True)
+        parent.btn_mat_update.setFlat(True)
         
         parent.tre_prj_item.headerItem().setForeground(0,QBrush(Qt.gray))
         parent.tre_prj_item.headerItem().setForeground(1,QBrush(Qt.gray))
         parent.tre_fls.headerItem().setForeground(0,QBrush(Qt.gray))
         parent.tre_fls.headerItem().setForeground(1,QBrush(Qt.gray))
         parent.tre_fls.headerItem().setForeground(2,QBrush(Qt.gray))
+        
     elif skin == "white":
         icon_path = os.path.join(icon_path, "black")
         setMainWindowIcons(parent, icon_path)
