@@ -488,7 +488,6 @@ def applyMainWindowSkin(parent, icon_path, skin="grey"):
         parent.btn_mat_rec.setStyleSheet(back_color + font_style_size + text_border)
         parent.btn_mat_take.setStyleSheet(back_color + font_style_size + text_border)
         parent.btn_mat_update.setStyleSheet(back_color + font_style_size + text_border)
-        parent.btn_open_gimp.setStyleSheet(back_color + font_style_size + text_border)
         
         parent.tre_prj_item.headerItem().setForeground(0,QBrush(Qt.gray))
         parent.tre_prj_item.headerItem().setForeground(1,QBrush(Qt.gray))

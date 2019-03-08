@@ -15,8 +15,6 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 # Import GIS libraries for showing geographic data.
 import numpy as np
-import pyqtgraph as pg
-import cartopy.crs as ccrs
 
 # Import DB libraries
 import sqlite3 as sqlite
