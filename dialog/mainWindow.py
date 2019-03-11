@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/yufujimoto/Desktop/simple/ui/mainWindow.ui'
+# Form implementation generated from reading ui file '/home/yufujimoto/GitHub/SimpleSDC/ui/mainWindow.ui'
 #
 # Created by: PyQt5 UI code generator 5.10.1
 #
@@ -496,7 +496,7 @@ class Ui_MainWindow(object):
         self.lay_h_fil_edit.setObjectName("lay_h_fil_edit")
         self.btn_fil_edit = QtWidgets.QPushButton(self.frm_fil_info_left)
         self.btn_fil_edit.setMinimumSize(QtCore.QSize(0, 25))
-        self.btn_fil_edit.setFlat(False)
+        self.btn_fil_edit.setFlat(True)
         self.btn_fil_edit.setObjectName("btn_fil_edit")
         self.lay_h_fil_edit.addWidget(self.btn_fil_edit)
         self.btn_img_sav = QtWidgets.QPushButton(self.frm_fil_info_left)
@@ -674,7 +674,7 @@ class Ui_MainWindow(object):
         self.frm_main_lay.addWidget(self.frm_right)
         MainWindow.setCentralWidget(self.frm_main)
         self.bar_menu = QtWidgets.QMenuBar(MainWindow)
-        self.bar_menu.setGeometry(QtCore.QRect(0, 0, 1030, 33))
+        self.bar_menu.setGeometry(QtCore.QRect(0, 0, 1030, 24))
         self.bar_menu.setObjectName("bar_menu")
         self.men_prj = QtWidgets.QMenu(self.bar_menu)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
