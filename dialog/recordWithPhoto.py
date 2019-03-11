@@ -137,7 +137,7 @@ class RecordWithImage(QDialog, recordWithPhotoDialog.Ui_testDialog):
         self.setWindowTitle(self.tr("Check Tethered Image"))
         self.setWindowState(Qt.WindowMaximized)
         
-        
+        # Initialyze the user interface.
         # Get the proper font size from the display size and set the font size.
         font_size = skin.getFontSize()
         
