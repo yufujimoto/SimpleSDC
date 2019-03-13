@@ -71,22 +71,69 @@ def askNewProject(parent):
             # Initialyze  global vaiables.
             parent._root_directory = prev_root_directory
             parent._table_directory = prev_table_directory
+            parent._consolidation_directory = prev_consolidation_directory
             parent._database = prev_database
+            parent._current_consolidation = prev_consolidation
             parent._current_material  = prev_material
             
             return(None)
         elif reply == QMessageBox.Yes:
             # Create the consolidation directory and the table directory.
+            os.mkdir(parent._consolidation_directory)
             os.mkdir(parent._table_directory)
-            os.mkdir(os.path.join(parent._root_directory,"Materials"))
             
             # Create new tables which defined by Simple Object Profile(SOP).
             createTables(parent._database)
+            
+            return(True)
         else:
             raise
     except Exception as e:
         error.ErrorMessageProjectNotCreated(details=str(e), language=parent.language)
         return(None)
+
+def askDeleteConsolidation(parent):
+    con_uuid = parent.current_consolidation.uuid
+    
+    if parent.language == "ja":
+        title = LAB_CON_JA + u"の削除"
+        message = LAB_CON_JA + u"が内包する全てのデータが削除されます。本当に削除しますか？"
+    elif parent.language == "en":
+        title = u"Delete the " + LAB_CON_EN + "."
+        message = u"Every kinds of datasets included in the " + LAB_CON_EN + u" will be removed. Would you like to delete the " + LAB_CON_EN + u" ?"
+    
+    reply = QMessageBox.question(
+        parent, 
+        title, 
+        message, 
+        QMessageBox.Yes, 
+        QMessageBox.No
+    )
+    
+    return(reply)
+
+def askNewMaterial(parent):
+    try:
+        con_uuid = parent.current_consolidation.uuid
+        
+        if parent.language == "ja":
+            title = LAB_MAT_JA + u"を内包する" + LAB_CON_JA + u"が指定されていません。"
+            message = u"現在の" + LAB_CON_JA + u"（" + con_uuid.decode("utf-8") + u"）に新規の" + LAB_MAT_JA + u"を追加しますか？"
+        elif parent.language == "en":
+            title = LAB_CON_EN + u" including the " + LAB_MAT_EN + u" is not selected."
+            message = u"Would you like to add a " + LAB_MAT_JA + u" to the current " + LAB_CON_EN + u" （" + con_uuid.decode("utf-8") + u"?"
+            
+        reply = QMessageBox.question(
+            parent, 
+            title, 
+            message, 
+            QMessageBox.Yes, 
+            QMessageBox.No
+        )
+        
+        return(reply)
+    except Exception as e:
+        print(str(e))
 
 def askDeleteMaterial(parent):
     mat_uuid = parent.current_material.uuid
@@ -194,6 +241,9 @@ def createTables(dbfile):
     print("general::createTables(dbfile)")
     
     try:
+        # Define the create table query for consolidation class.
+        createTableConsolidation(dbfile)
+        
         # Define the create table query for material class.
         createTableMaterial(dbfile)
         
@@ -209,6 +259,29 @@ def createTables(dbfile):
         # Return Nothing..
         return(None)
 
+def createTableConsolidation(dbfile):
+    print("general::createTableConsolidation(dbfile)")
+    
+    try:
+        # Define the create table query for consolidation class.
+        sql_create = """CREATE TABLE consolidation (
+                        id INTEGER PRIMARY KEY,
+                        uuid text NOT NULL,
+                        name text,
+                        geographic_annotation text,
+                        temporal_annotation text,
+                        description text,
+                        flickr_photosetid
+                    );"""
+        # Execute SQL create.
+        executeSql(dbfile, sql_create)
+    except Exception as e:
+        print("Error occurs in general::createTableConsolidation(dbfile)")
+        print(str(e))
+        
+        # Return Nothing
+        return(None)
+
 def createTableMaterial(dbfile):
     print("general::createTableMaterial(dbfile)")
     
@@ -217,7 +290,7 @@ def createTableMaterial(dbfile):
         sql_create = """CREATE TABLE material (
                         id integer PRIMARY KEY,
                         uuid text NOT NULL,
-                        con_id text,
+                        con_id text NOT NULL,
                         name text,
                         material_number text,
                         estimated_period_beginning character varying(255),
@@ -226,7 +299,8 @@ def createTableMaterial(dbfile):
                         latitude real,
                         longitude real,
                         altitude real,
-                        description text
+                        description text,
+                        FOREIGN KEY (con_id) REFERENCES consolidation (uuid) ON UPDATE CASCADE ON DELETE CASCADE
                     );"""
         
         # Execute SQL create.
@@ -262,6 +336,7 @@ def createTableFile(dbfile):
                         caption character varying(255),
                         description text,
                         flickr_photoid text,
+                        FOREIGN KEY (con_id) REFERENCES consolidation (uuid) ON UPDATE CASCADE ON DELETE CASCADE,
                         FOREIGN KEY (mat_id) REFERENCES material (uuid) ON UPDATE CASCADE ON DELETE CASCADE
                     );"""
         
@@ -324,6 +399,28 @@ def checkTableExist(dbfile, table_name):
                 return(False)
     except Exception as e:
         print("Error occurs in general::checkTableExist(dbfile, table_name)")
+        print(str(e))
+        
+        # Return nothing.
+        return(None)
+
+def checkConsolidationTableFields(dbfile):
+    print("general::checkConsolidationTableFields(dbfile)")
+    
+    try:
+        # Create a list for fields checking.
+        con_fields = [
+                        ("uuid", "text"),
+                        ("name", "text"),
+                        ("geographic_annotation", "text"),
+                        ("temporal_annotation", "text"),
+                        ("description", "text"),
+                        ("flickr_photosetid", "text")
+                    ]
+        # Check fields.
+        checkFieldsExists(dbfile, "consolidation", con_fields)
+    except Exception as e:
+        print("Error occurs in general::checkConsolidationTableFields(dbfile)")
         print(str(e))
         
         # Return nothing.
@@ -454,8 +551,8 @@ def checkFieldsExists(dbfile, table_name, fields):
         # Finally close the connection.
         conn.close()
 
-def createDirectories(item_path):
-    print("general::createDirectories(item_path)")
+def createDirectories(item_path, isConsolidation):
+    print("general::createDirectories(item_path, isConsolidation)")
     
     try:
         # Define the root path and create the root directory.
@@ -481,6 +578,9 @@ def createDirectories(item_path):
         os.mkdir(os.path.join(sop_dir_img, "Raw"))
         os.mkdir(os.path.join(sop_dir_img, "Thumbs"))
         
+        # In case consolidation, create a directory for materials.
+        if isConsolidation:
+            os.mkdir(os.path.join(sop_dir_root, "Materials"))
     except Exception as e:
         print("Error occurs in general::checkAdditionalAttributeTableFields(dbfile)")
         print(str(e))
