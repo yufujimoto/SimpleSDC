@@ -35,8 +35,6 @@ class CheckImageDialog(QDialog, checkTetheredImageDialog.Ui_tetheredDialog):
     @property
     def table_directory(self): return self._table_directory
     @property
-    def consolidation_directory(self): return self._consolidation_directory
-    @property
     def database(self): return self._database
     @property
     def label_consolidation(self): return self._label_consolidation
@@ -64,8 +62,6 @@ class CheckImageDialog(QDialog, checkTetheredImageDialog.Ui_tetheredDialog):
     def root_directory(self, value): self._root_directory = value
     @table_directory.setter
     def table_directory(self, value): self._table_directory = value
-    @consolidation_directory.setter
-    def consolidation_directory(self, value): self._consolidation_directory = value
     @database.setter
     def database(self, value): self._database = value
     @label_consolidation.setter

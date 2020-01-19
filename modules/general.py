@@ -71,7 +71,6 @@ def askNewProject(parent):
             # Initialyze  global vaiables.
             parent._root_directory = prev_root_directory
             parent._table_directory = prev_table_directory
-            parent._consolidation_directory = prev_consolidation_directory
             parent._database = prev_database
             parent._current_consolidation = prev_consolidation
             parent._current_material  = prev_material
@@ -79,8 +78,8 @@ def askNewProject(parent):
             return(None)
         elif reply == QMessageBox.Yes:
             # Create the consolidation directory and the table directory.
-            os.mkdir(parent._consolidation_directory)
             os.mkdir(parent._table_directory)
+            os.mkdir(os.path.join(parent._root_directory,"Materials"))
             
             # Create new tables which defined by Simple Object Profile(SOP).
             createTables(parent._database)
@@ -240,10 +239,7 @@ def getFilesWithExtensionList(dir_search, ext_list_search, result=None):
 def createTables(dbfile):
     print("general::createTables(dbfile)")
     
-    try:
-        # Define the create table query for consolidation class.
-        createTableConsolidation(dbfile)
-        
+    try:      
         # Define the create table query for material class.
         createTableMaterial(dbfile)
         
@@ -259,29 +255,6 @@ def createTables(dbfile):
         # Return Nothing..
         return(None)
 
-def createTableConsolidation(dbfile):
-    print("general::createTableConsolidation(dbfile)")
-    
-    try:
-        # Define the create table query for consolidation class.
-        sql_create = """CREATE TABLE consolidation (
-                        id INTEGER PRIMARY KEY,
-                        uuid text NOT NULL,
-                        name text,
-                        geographic_annotation text,
-                        temporal_annotation text,
-                        description text,
-                        flickr_photosetid
-                    );"""
-        # Execute SQL create.
-        executeSql(dbfile, sql_create)
-    except Exception as e:
-        print("Error occurs in general::createTableConsolidation(dbfile)")
-        print(str(e))
-        
-        # Return Nothing
-        return(None)
-
 def createTableMaterial(dbfile):
     print("general::createTableMaterial(dbfile)")
     
@@ -290,7 +263,7 @@ def createTableMaterial(dbfile):
         sql_create = """CREATE TABLE material (
                         id integer PRIMARY KEY,
                         uuid text NOT NULL,
-                        con_id text NOT NULL,
+                        con_id text,
                         name text,
                         material_number text,
                         estimated_period_beginning character varying(255),
@@ -551,7 +524,7 @@ def checkFieldsExists(dbfile, table_name, fields):
         # Finally close the connection.
         conn.close()
 
-def createDirectories(item_path, isConsolidation):
+def createDirectories(item_path):
     print("general::createDirectories(item_path, isConsolidation)")
     
     try:
@@ -577,10 +550,6 @@ def createDirectories(item_path, isConsolidation):
         os.mkdir(os.path.join(sop_dir_img, "Main"))
         os.mkdir(os.path.join(sop_dir_img, "Raw"))
         os.mkdir(os.path.join(sop_dir_img, "Thumbs"))
-        
-        # In case consolidation, create a directory for materials.
-        if isConsolidation:
-            os.mkdir(os.path.join(sop_dir_root, "Materials"))
     except Exception as e:
         print("Error occurs in general::checkAdditionalAttributeTableFields(dbfile)")
         print(str(e))

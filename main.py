@@ -235,10 +235,8 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                             
                             # Some essential directories are created under the root directory if they are not existed.
                             self._table_directory = os.path.join(self._root_directory, "Table")
-                            self._consolidation_directory = os.path.join(self._root_directory, "Consolidation")
                             
-                            # Reset the current consolidation and the current material.
-                            self._current_consolidation = None
+                            # Reset the current current material.
                             self._current_material = None
                             
                             # Define the DB file.
@@ -595,9 +593,11 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
         # Exit if selected item is 0.
         if (selected == None or len(selected) == 0): return(None)
         
+        # Init the current material.
         self._current_material = None
         
         try:
+            # Reset the current tree object.
             self.tre_prj_item.setCurrentItem(selected[0])
             
             # Clear all information beforehand.
@@ -605,7 +605,7 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
             
             # Get the Materil if the node have a parent.
             selected_uuid = selected[0].text(0)
-            
+            print(selected_uuid)
             # Set current material.
             self._current_material = features.Material(is_new=False, uuid=selected_uuid, dbfile=self._database)
             
@@ -765,8 +765,6 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                                         sop_material.uuid = entries[i]
                                 elif mat_head[i] == "consolidation":
                                     sop_material.consolidation = entries[i]
-                                    
-                                    con_dir = os.path.join(self._consolidation_directory, sop_material.consolidation)
                                     mat_dir = os.path.join(con_dir, "Materials")
                                     
                                     # Create a directory for storing objects.
@@ -781,7 +779,6 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                                 elif mat_head[i] == "altitude": sop_material.altitude = entries[i]
                                 elif mat_head[i] == "description": sop_material.description = entries[i]
                                 elif mat_head[i] == "main":
-                                    con_dir = os.path.join(self._consolidation_directory, sop_material.consolidation)
                                     itm_dir = os.path.join(mat_dir, sop_material.uuid)
                                     
                                     # Define the path for saving files.
@@ -808,7 +805,7 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                                         sop_img_file = features.File(is_new=True, uuid=None, dbfile=None)
                                         
                                         sop_img_file.material = sop_material.uuid
-                                        sop_img_file.consolidation = sop_material.consolidation
+                                        sop_img_file.consolidation = ""
                                         sop_img_file.filename = general.getRelativePath(main_dest, "Materials")
                                         sop_img_file.created_date = now
                                         sop_img_file.modified_date = now
@@ -828,7 +825,6 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                                     else:
                                         print("File not found:" + main_org)
                                 elif mat_head[i] == "raw":
-                                    con_dir = os.path.join(self._consolidation_directory, sop_material.consolidation)
                                     itm_dir = os.path.join(mat_dir, sop_material.uuid)
                                     
                                     # Define the path for saving files.
@@ -855,7 +851,7 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                                         # Instantiate the File class.
                                         sop_raw_file = features.File(is_new=True, uuid=None, dbfile=None)
                                         sop_raw_file.material = sop_material.uuid
-                                        sop_raw_file.consolidation = sop_material.consolidation
+                                        sop_raw_file.consolidation = ""
                                         sop_raw_file.filename = general.getRelativePath(raw_dest, "Materials")
                                         sop_raw_file.created_date = now
                                         sop_raw_file.modified_date = now
@@ -1012,9 +1008,6 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
     def addMaterial(self):
         print("main::addMaterial(self)")
         
-        # Exit if the root directory is not loaded.
-        if self._root_directory == None: error.ErrorMessageProjectOpen(language=self._language); return(None)
-        
         try:
             # Exit if the root directory is not loaded.
             if self._root_directory == None: error.ErrorMessageProjectOpen(language=self._language); return(None)
@@ -1041,11 +1034,11 @@ class mainPanel(QMainWindow, mainWindow.Ui_MainWindow):
                 
                 # Create the SQL query for inserting the new consolidation.
                 self._current_material.dbInsert(self._database)
+                print(self._database)
                 
                 # Create a directory to store material.
                 mat_dir = os.path.join(self._root_directory, "Materials")
                 general.createDirectories(os.path.join(mat_dir, self._current_material.uuid))
-                
                 
                 # Update the tree view.
                 tre_prj_item_items = QTreeWidgetItem(self.tre_prj_item)

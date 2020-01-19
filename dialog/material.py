@@ -31,8 +31,8 @@ class materialDialog(QDialog, materialDialog.Ui_materialDialog):
         # Initialize the window.
         self.setWindowTitle(self.tr("Material View"))
         
-        self.bbx_mat_res.buttons()[0].setFlat(True)
-        self.bbx_mat_res.buttons()[1].setFlat(True)
+        self.btn_ok.clicked.connect(self.isAccepted)
+        self.btn_cnl.clicked.connect(self.isCanceled)
         
         # Initialyze the user interface.
         # Get the proper font size from the display size and set the font size.
@@ -81,12 +81,12 @@ class materialDialog(QDialog, materialDialog.Ui_materialDialog):
         
         # Set the dialog button size.
         dlg_btn_size = QSize(125, 30)
-        self.bbx_mat_res.buttons()[0].setMinimumSize(dlg_btn_size)
-        self.bbx_mat_res.buttons()[1].setMinimumSize(dlg_btn_size)
+        self.btn_ok.setMinimumSize(dlg_btn_size)
+        self.btn_cnl.setMinimumSize(dlg_btn_size)
         
         # Set the skin and icon.
-        self.bbx_mat_res.buttons()[0].setIcon(skin.getIconFromPath(os.path.join(icon_path, 'check.png')))
-        self.bbx_mat_res.buttons()[1].setIcon(skin.getIconFromPath(os.path.join(icon_path, 'close.png')))
+        self.btn_ok.setIcon(skin.getIconFromPath(os.path.join(icon_path, 'check.png')))
+        self.btn_cnl.setIcon(skin.getIconFromPath(os.path.join(icon_path, 'close.png')))
         
         # Setup labels with designated language.
         if parent.language == "ja":
@@ -100,8 +100,8 @@ class materialDialog(QDialog, materialDialog.Ui_materialDialog):
             self.lbl_mat_tmp_mid.setText("中間時期 :")
             self.lbl_mat_tmp_end.setText("終了時期 :")
             self.lbl_mat_description.setText("資料の備考 :")
-            self.bbx_mat_res.buttons()[0].setText("OK")
-            self.bbx_mat_res.buttons()[1].setText("キャンセル")
+            self.btn_ok.setText("OK")
+            self.btn_cnl.setText("キャンセル")
         elif parent.language == "en":
             self.lbl_mat_uuid.setText("UUID :")
             self.lbl_mat_number.setText("Number :")
@@ -113,8 +113,8 @@ class materialDialog(QDialog, materialDialog.Ui_materialDialog):
             self.lbl_mat_tmp_mid.setText("Peak :")
             self.lbl_mat_tmp_end.setText("End :")
             self.lbl_mat_description.setText("Description :")
-            self.bbx_mat_res.buttons()[0].setText("OK")
-            self.bbx_mat_res.buttons()[1].setText("Cancel")
+            self.btn_ok.setText("OK")
+            self.btn_cnl.setText("Cancel")
         
         # Set attributes to text boxes.
         self.tbx_mat_uuid.setText(parent._current_material.uuid)
@@ -128,6 +128,11 @@ class materialDialog(QDialog, materialDialog.Ui_materialDialog):
         self.tbx_mat_geo_alt.setText(parent._current_material.altitude)
         self.tbx_mat_description.setText(parent._current_material.description)
         
+    def isAccepted(self):
+        self.accept()
+    
+    def isCanceled(self):
+        self.reject()
         
         
         
